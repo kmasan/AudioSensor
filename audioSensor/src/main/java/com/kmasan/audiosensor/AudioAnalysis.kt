@@ -17,7 +17,7 @@ class AudioAnalysis {
     fun toMaxAmplitude(buffer: ShortArray): Double{
         //振幅が最大の周波数とその振幅値の解析
         var maxAmplitude = 0.0 // 最大振幅
-        // 最大振幅が入っているリスト番号を捜査
+        // 最大振幅が入っているリスト番号を走査
         for(index in IntStream.range(0, buffer.size - 1)){
             val tmp = sqrt((buffer[index] * buffer[index] + buffer[index + 1] * buffer[index + 1]).toDouble())
             if (maxAmplitude < tmp){
@@ -30,7 +30,7 @@ class AudioAnalysis {
     fun toMaxAmplitude(buffer: DoubleArray): Double{
         //振幅が最大の周波数とその振幅値の解析
         var maxAmplitude = 0.0 // 最大振幅
-        // 最大振幅が入っているリスト番号を捜査
+        // 最大振幅が入っているリスト番号を走査
         for(index in IntStream.range(0, buffer.size - 1)){
             val tmp = sqrt((buffer[index] * buffer[index] + buffer[index + 1] * buffer[index + 1]))
             if (maxAmplitude < tmp){
@@ -60,7 +60,7 @@ class AudioAnalysis {
         //振幅が最大の周波数とその振幅値の解析
         var maxAmplitude = 0.0 // 最大振幅
         var maxIndex = 0 // 最大振幅が入っているリスト番号
-        // 最大振幅が入っているリスト番号を捜査
+        // 最大振幅が入っているリスト番号を走査
         for(index in IntStream.range(0, buffer.size - 1)){
             val tmp = sqrt((buffer[index] * buffer[index] + buffer[index + 1] * buffer[index + 1]))
             if (maxAmplitude < tmp){

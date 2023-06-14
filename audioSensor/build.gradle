@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -39,4 +40,37 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     implementation 'com.github.wendykierp:JTransforms:3.1'
+}
+
+def repo = new File(rootDir, "repository")
+
+//apply plugin: "maven"
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
+
+                // You can then customize attributes of the publication as shown below.
+                groupId = 'com.kmasan.audiosensor'
+                artifactId = 'audio-sensor'
+                version = '1.0.0'
+            }
+        }
+        repositories {
+            maven {
+                name = 'GitHubPackages'
+
+                url = uri("https://maven.pkg.github.com/kmasan/audio-sensor-android")
+
+                credentials {
+                    username = "kmasan"
+                    password = "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"
+                }
+            }
+        }
+    }
 }

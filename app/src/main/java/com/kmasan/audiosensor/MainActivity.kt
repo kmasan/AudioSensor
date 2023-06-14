@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -63,8 +64,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             var sensorButtonText by remember { mutableStateOf(" sensor off") }
             var csvButtonText by remember { mutableStateOf("csv start") }
-            var accelerationText by remember { mutableStateOf("null") }
-            var audioText by remember { mutableStateOf("null") }
+            val dbText by audioSensor.volumeLiveData.observeAsState()
 
             AudioSensorTheme{
                 // A surface container using the 'background' color from the theme
@@ -103,10 +103,8 @@ class MainActivity : ComponentActivity() {
                         }) {
                             Text(text = csvButtonText)
                         }
-//                        Text(text = "acceleration")
-//                        Text(text = accelerationText)
-//                        Text(text = "audio")
-//                        Text(text = accelerationText)
+                        Text(text = "audio: db")
+                        Text(text = dbText.toString())
                     }
                 }
             }

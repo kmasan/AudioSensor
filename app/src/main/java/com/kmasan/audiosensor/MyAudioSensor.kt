@@ -4,6 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
@@ -47,6 +49,8 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
 
     var volume = 0 // 現在の音量
         private set
+    private var _volumeLiveData = MutableLiveData(volume)
+    val volumeLiveData: LiveData<Int> = _volumeLiveData
     var voice = 0 // 現在の音の高さレベル
         private set
 
@@ -58,6 +62,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         queue.add(AudioData(System.currentTimeMillis(), data, fft))
         volume = audioAnalysis.toDB(data)
         Log.d(LOG_NAME, "$volume")
+        _volumeLiveData.postValue(volume)
 
         // 最大振幅の周波数
         val maxFrequency: Int = audioAnalysis.toMaxFrequency(fft, audioSensor.sampleRate)
