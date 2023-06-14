@@ -4,6 +4,11 @@ plugins {
     id 'maven-publish'
 }
 
+group = 'com.github.kmasan'
+ext{
+    lib_version = '0.2'
+}
+
 android {
     namespace 'com.kmasan.audiosensor'
     compileSdk 33
@@ -23,11 +28,11 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = '11'
+        jvmTarget = '1.8'
     }
 
     publishing {
@@ -67,7 +72,7 @@ publishing {
         GitHubPackages(MavenPublication) {
             groupId "com.github.kmasan"
             artifactId "audio-sensor"
-            version "0.0"
+            version lib_version
 
             afterEvaluate {
                 from components.release
@@ -81,6 +86,20 @@ publishing {
                         name = 'kmasan'
                     }
                 }
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.kmasan'
+                artifactId = 'audio-sensor'
+                version = lib_version
             }
         }
     }
