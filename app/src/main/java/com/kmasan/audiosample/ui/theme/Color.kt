@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor.ui.theme
+package com.kmasan.audiosample.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

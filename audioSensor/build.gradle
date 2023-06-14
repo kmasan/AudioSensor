@@ -29,10 +29,15 @@ android {
     kotlinOptions {
         jvmTarget = '11'
     }
+
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
-
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
@@ -42,33 +47,39 @@ dependencies {
     implementation 'com.github.wendykierp:JTransforms:3.1'
 }
 
-def repo = new File(rootDir, "repository")
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = 'https://maven.pkg.github.com/kmasan/AudioSensor'
 
-//apply plugin: "maven"
+            credentials {
+                def localProperties = new Properties()
+                localProperties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release
-
-                // You can then customize attributes of the publication as shown below.
-                groupId = 'com.kmasan.audiosensor'
-                artifactId = 'audio-sensor'
-                version = '1.0.0'
+                username = 'kmasan'
+                password = localProperties.containsKey("github.token") ? localProperties.getProperty('github.token') : ''
             }
         }
-        repositories {
-            maven {
-                name = 'GitHubPackages'
+    }
 
-                url = uri("https://maven.pkg.github.com/kmasan/audio-sensor-android")
+    publications {
+        GitHubPackages(MavenPublication) {
+            groupId "com.github.kmasan"
+            artifactId "audio-sensor"
+            version "0.0"
 
-                credentials {
-                    username = "kmasan"
-                    password = "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"
+            afterEvaluate {
+                from components.release
+            }
+
+            pom {
+                url = 'https://github.com/kmasan/AudioSensor'
+
+                licenses {
+                    license {
+                        name = 'kmasan'
+                    }
                 }
             }
         }

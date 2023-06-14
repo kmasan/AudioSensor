@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor
+package com.kmasan.audiosample
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

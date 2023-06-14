@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor
+package com.kmasan.audiosample
 
 import android.content.Context
 import android.os.Handler
@@ -6,6 +6,8 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.kmasan.audiosensor.AudioAnalysis
+import com.kmasan.audiosensor.AudioSensor
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter

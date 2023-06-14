@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor
+package com.kmasan.audiosample
 
 import org.junit.Test
 

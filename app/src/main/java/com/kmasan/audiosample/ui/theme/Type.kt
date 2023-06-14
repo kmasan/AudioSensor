@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor.ui.theme
+package com.kmasan.audiosample.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

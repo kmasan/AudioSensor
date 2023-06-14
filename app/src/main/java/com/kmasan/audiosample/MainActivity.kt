@@ -1,4 +1,4 @@
-package com.kmasan.audiosensor
+package com.kmasan.audiosample
 
 import android.os.Bundle
 import android.os.Environment
@@ -20,7 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.kmasan.audiosensor.ui.theme.AudioSensorTheme
+import com.kmasan.audiosample.ui.theme.AudioSensorTheme
 
 class MainActivity : ComponentActivity() {
     lateinit var audioSensor: MyAudioSensor
