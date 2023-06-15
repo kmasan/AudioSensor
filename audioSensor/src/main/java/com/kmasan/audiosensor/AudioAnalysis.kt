@@ -6,6 +6,7 @@ import kotlin.math.log10
 import kotlin.math.sqrt
 
 class AudioAnalysis {
+    // audioのbufferを処理する関数軍
     fun toDB(buffer: ShortArray): Int {
         // 最大音量を解析
         val sum = buffer.sumOf { it.toDouble() * it.toDouble() }

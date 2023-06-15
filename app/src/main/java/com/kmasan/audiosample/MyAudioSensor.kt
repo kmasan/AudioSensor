@@ -6,8 +6,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.kmasan.audiosensor.AudioAnalysis
-import com.kmasan.audiosensor.AudioSensor
+import com.kmasan.audiosensor.*
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
@@ -100,7 +99,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
             val hnd = Handler(Looper.getMainLooper())
             queue.clear()
             csvRun = true
-            // こいつ(rnb0) が何回も呼ばれる
+            // rnbが何回も呼ばれる
             val rnb = object : Runnable {
                 override fun run() {
                     val queueClone = queue

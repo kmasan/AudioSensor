@@ -17,38 +17,65 @@ class AudioSensor(
     val audioSource: Int = MediaRecorder.AudioSource.MIC,
     val sampleRate: Int = 44100,
     val audioChannel: Int = AudioFormat.CHANNEL_IN_MONO,
-    val audioPCM: Int = AudioFormat.ENCODING_PCM_16BIT
+    val audioEncoding: Int = AudioFormat.ENCODING_PCM_16BIT
 ) {
-    private val bufferSize = AudioRecord.getMinBufferSize(
-        sampleRate, AudioFormat.CHANNEL_IN_MONO,
-        AudioFormat.ENCODING_PCM_16BIT
+    /*
+    audioを随時取得するクラス
+
+    "private val context: Context"
+    Activity等を指定
+    android.permission.RECORD_AUDIOが許可されているかの確認に使用
+
+    "private val listener: AudioSensorListener?"
+    bufferの値が変わった際のデータ送り先
+    随時処理が不要ならnullでおｋ
+
+    "val audioSource: Int = MediaRecorder.AudioSource.MIC"
+    audioの音源元
+    デフォルトでマイクにしてる
+
+    "val sampleRate: Int = 44100"
+    １データのサンプルレート
+    デフォルトはおすすめの値
+
+    "val audioChannel: Int = AudioFormat.CHANNEL_IN_MONO"
+    データのチャンネル数
+    デフォルトはモノラル（１チャンネル）
+
+    "val audioEncoding: Int = AudioFormat.ENCODING_PCM_16BIT"
+    audioのエンコーディング方法
+    */
+    val bufferSize = AudioRecord.getMinBufferSize(
+        sampleRate, audioChannel,
+        audioEncoding
     )
     lateinit var audioRecord: AudioRecord
+        private set
     var buffer:ShortArray = ShortArray(bufferSize)
         private set
     var isRecoding: Boolean = false
         private set
 
-    // period: オーディオ処理のインターバル, recordingMode: 処理の種類（定数として宣言済み）
+    // period[ms]: Audio processing interval
     fun start(period: Int) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            error("permission is disable")
+            error("\"android.permission.RECORD_AUDIO\" is disable\n")
         }
         audioRecord = AudioRecord(
             audioSource,
             sampleRate,
             audioChannel,
-            audioPCM,
+            audioEncoding,
             bufferSize
         )
         audioRecord.startRecording()
 
         isRecoding = true
-        // 指定period[ms]ごとにrecordingModeで指定した処理を実行
+        // 指定period[ms]ごとに処理を実行
         recoding(period)
     }
 
@@ -56,11 +83,11 @@ class AudioSensor(
         isRecoding = false
     }
 
-    //
+    // 音声取得ループ
     private fun recoding(period: Int) {
-        val hnd0 = Handler(Looper.getMainLooper())
+        val hnd = Handler(Looper.getMainLooper())
         // こいつ(rnb0) が何回も呼ばれる
-        val rnb0 = object : Runnable {
+        val rnb = object : Runnable {
             override fun run() {
                 // bufferにデータを入れる
                 audioRecord.read(buffer,0,bufferSize)
@@ -70,12 +97,12 @@ class AudioSensor(
                 // stop用のフラグ
                 if (isRecoding) {
                     // 指定時間後に自分自身を呼ぶ
-                    hnd0.postDelayed(this, period.toLong())
+                    hnd.postDelayed(this, period.toLong())
                 }
             }
         }
-        // 初回の呼び出し
-        hnd0.post(rnb0)
+        // First call
+        hnd.post(rnb)
     }
 
     interface AudioSensorListener{
