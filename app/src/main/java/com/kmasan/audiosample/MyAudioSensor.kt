@@ -11,7 +11,9 @@ import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
 import java.io.FileWriter
 import java.io.IOException
+import java.util.stream.IntStream.range
 import kotlin.collections.ArrayDeque
+import kotlin.math.*
 
 
 class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
@@ -21,7 +23,9 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         data class AudioData(
             val time: Long,
             val buffer: ShortArray,
-            val fft: DoubleArray
+            val fft: DoubleArray,
+            val fft2: DoubleArray,
+            val envelope: DoubleArray
         ) {
             override fun equals(other: Any?): Boolean {
                 if (this === other) return true
@@ -60,7 +64,10 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
 
     override fun onAudioSensorChanged(data: ShortArray) {
         val fft = audioAnalysis.fft(data)
-        queue.add(AudioData(System.currentTimeMillis(), data, fft))
+        val fft2 = audioAnalysis.fft(audioAnalysis.toLogSpectrum(fft))
+        val envelope = audioAnalysis.toSpectrumEnvelope(fft, 2.0, audioSensor.sampleRate)
+        if(csvRun)
+            queue.add(AudioData(System.currentTimeMillis(), data.clone(), fft.clone(), fft2.clone(), envelope.clone()))
         volume = audioAnalysis.toDB(data)
         Log.d(LOG_NAME, "$volume")
         _volumeLiveData.postValue(volume)
@@ -81,6 +88,19 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         }
     }
 
+    fun cosineSimilarity(dataA: DoubleArray, dataB: DoubleArray): Double {
+        // コサイン類似度を計算
+        var dotProduct = 0.0
+        var normA = 0.0
+        var normB = 0.0
+        for ( i in range(0, dataA.size)) {
+            dotProduct += dataA[i] * dataB[i];
+            normA += dataA[i].pow(2.0)
+            normB += dataB[i].pow(2.0)
+        }
+        return dotProduct / (sqrt(normA) * sqrt(normB))
+    }
+
     fun csvWriterStart(path: String, fileName: String): Boolean {
         //CSVファイルの定期的な書き出し
         try{
@@ -93,7 +113,9 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
                     .withHeader(
                         "time",
                         "buffer",
-                        "fft"
+                        "fft",
+                        "fft2",
+                        "envelope"
                     )
             )
             val hnd = Handler(Looper.getMainLooper())
@@ -102,14 +124,16 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
             // rnbが何回も呼ばれる
             val rnb = object : Runnable {
                 override fun run() {
-                    val queueClone = queue
+//                    val queueClone = queue
                     //書き込み開始
-                    for(data in queueClone){
+                    for(data in queue){
                         //データ保存
                         csvPrinter.printRecord(
-                            data.time.toString(),
-                            data.buffer.toList().toString(),
-                            data.fft.toList().toString()
+                            data.time,
+                            data.buffer.toList(),
+                            data.fft.toList(),
+                            data.fft2.toList(),
+                            data.envelope.toList()
                         )
                     }
                     queue.clear()

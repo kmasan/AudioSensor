@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.github.kmasan'
 ext{
-    lib_version = '1.0'
+    lib_version = '1.1'
 }
 
 android {
