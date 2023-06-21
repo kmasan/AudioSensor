@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import androidx.compose.runtime.DefaultMonotonicFrameClock
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.kmasan.audiosensor.*
@@ -46,6 +47,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
 
     private val audioSensor = AudioSensor(context, this)
     private val audioAnalysis = AudioAnalysis()
+    private val vowelEnvelopeData = VowelEnvelopeData(context)
 
     var queue: ArrayDeque<AudioData> = ArrayDeque(listOf())
     private set
@@ -59,6 +61,11 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
     var voice = 0 // 現在の音の高さレベル
         private set
 
+    var vowel = "null" // 現在の音量
+        private set
+    private var _vowelLiveData = MutableLiveData(vowel)
+    val vowelLiveData: LiveData<String> = _vowelLiveData
+
     fun start(period: Int) = audioSensor.start(period)
     fun stop() = audioSensor.stop()
 
@@ -69,7 +76,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         if(csvRun)
             queue.add(AudioData(System.currentTimeMillis(), data.clone(), fft.clone(), fft2.clone(), envelope.clone()))
         volume = audioAnalysis.toDB(data)
-        Log.d(LOG_NAME, "$volume")
+//        Log.d(LOG_NAME, "$volume")
         _volumeLiveData.postValue(volume)
 
         // 最大振幅の周波数
@@ -85,6 +92,34 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
             voiceLevel < 0 -> 0
             voiceLevel > levelStage -> levelStage
             else -> voiceLevel
+        }
+
+        // 母音推定
+        vowel = vowelAnalysis(envelope)
+        _vowelLiveData.postValue(vowel)
+    }
+
+    fun vowelAnalysis(envelope: DoubleArray): String{
+        // 母音推定
+        // コサイン類似度の計算
+        val cosineSimilarityA = cosineSimilarity(envelope, vowelEnvelopeData.voiceA)
+        val cosineSimilarityI = cosineSimilarity(envelope, vowelEnvelopeData.voiceI)
+        val cosineSimilarityU = cosineSimilarity(envelope, vowelEnvelopeData.voiceU)
+        val cosineSimilarityE = cosineSimilarity(envelope, vowelEnvelopeData.voiceE)
+        val cosineSimilarityO = cosineSimilarity(envelope, vowelEnvelopeData.voiceO)
+        val cosineSimilarityList = listOf(
+            cosineSimilarityA, cosineSimilarityI, cosineSimilarityU, cosineSimilarityE, cosineSimilarityO
+        )
+        Log.d(LOG_NAME, "cosineSimilarity: $cosineSimilarityList")
+
+        // コサイン類似度の比較
+        return when(cosineSimilarityList.max()){
+            cosineSimilarityA -> "a"
+            cosineSimilarityI -> "i"
+            cosineSimilarityU -> "u"
+            cosineSimilarityE -> "e"
+            cosineSimilarityO -> "o"
+            else -> "null"
         }
     }
 

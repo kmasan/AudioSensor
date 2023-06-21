@@ -44,9 +44,7 @@ class AudioAnalysis {
 
     fun fft(buffer: ShortArray): DoubleArray{
         val fft = DoubleFFT_1D(buffer.size.toLong())
-        val fftBuffer = DoubleArray(buffer.size * 2)
-        val doubleBuffer: DoubleArray = buffer.map { it.toDouble() }.toDoubleArray()
-        System.arraycopy(doubleBuffer, 0, fftBuffer, 0, buffer.size)
+        val fftBuffer: DoubleArray = buffer.map { it.toDouble() }.toDoubleArray()
         fft.realForward(fftBuffer)
         return fftBuffer
     }
@@ -80,10 +78,9 @@ class AudioAnalysis {
         val cepstrum = toLogSpectrum(power).map{it.toInt().toDouble()}.toDoubleArray() // LogSpectrumに変換してcepstrumを求める
         fft.realForward(cepstrum)
         // 高周波数成分を消す
-        for(i in range(0,cepstrum.size)){
-            if (i > cepstrum.size  /4 || abs(cepstrum[i]) > 100000){
+        cepstrum[0] = 0.0
+        for(i in range(thresholdN,cepstrum.size)){
                 cepstrum[i] = 0.0
-            }
         }
         fft.realInverse(cepstrum, true)
         return cepstrum

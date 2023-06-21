@@ -65,6 +65,7 @@ class MainActivity : ComponentActivity() {
             var sensorButtonText by remember { mutableStateOf(" sensor off") }
             var csvButtonText by remember { mutableStateOf("csv start") }
             val dbText by audioSensor.volumeLiveData.observeAsState()
+            val vowelText by audioSensor.vowelLiveData.observeAsState()
 
             AudioSensorTheme{
                 // A surface container using the 'background' color from the theme
@@ -103,8 +104,8 @@ class MainActivity : ComponentActivity() {
                         }) {
                             Text(text = csvButtonText)
                         }
-                        Text(text = "audio: db")
-                        Text(text = dbText.toString())
+                        Text(text = "db: $dbText")
+                        Text(text = "vowel: $vowelText")
                     }
                 }
             }
