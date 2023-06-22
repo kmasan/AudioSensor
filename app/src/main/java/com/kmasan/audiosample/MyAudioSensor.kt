@@ -61,7 +61,7 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
     var voice = 0 // 現在の音の高さレベル
         private set
 
-    var vowel = "null" // 現在の音量
+    var vowel = "null" // 現在の母音
         private set
     private var _vowelLiveData = MutableLiveData(vowel)
     val vowelLiveData: LiveData<String> = _vowelLiveData
@@ -107,8 +107,10 @@ class MyAudioSensor(context: Context): AudioSensor.AudioSensorListener {
         val cosineSimilarityU = cosineSimilarity(envelope, vowelEnvelopeData.voiceU)
         val cosineSimilarityE = cosineSimilarity(envelope, vowelEnvelopeData.voiceE)
         val cosineSimilarityO = cosineSimilarity(envelope, vowelEnvelopeData.voiceO)
+        val cosineSimilarityNull = cosineSimilarity(envelope, vowelEnvelopeData.voiceNull)
         val cosineSimilarityList = listOf(
-            cosineSimilarityA, cosineSimilarityI, cosineSimilarityU, cosineSimilarityE, cosineSimilarityO
+            cosineSimilarityA, cosineSimilarityI, cosineSimilarityU,
+            cosineSimilarityE, cosineSimilarityO//, cosineSimilarityNull
         )
         Log.d(LOG_NAME, "cosineSimilarity: $cosineSimilarityList")
 

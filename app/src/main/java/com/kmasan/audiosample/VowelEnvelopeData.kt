@@ -18,6 +18,8 @@ class VowelEnvelopeData(context: Context) {
         private set
     lateinit var voiceO: DoubleArray
         private set
+    lateinit var voiceNull: DoubleArray
+        private set
 
     init {
         csvRead()
@@ -45,6 +47,7 @@ class VowelEnvelopeData(context: Context) {
                     "u" -> voiceU = envelope
                     "e" -> voiceE = envelope
                     "o" -> voiceO = envelope
+                    "null" -> voiceNull = envelope
                 }
             }
 //            Log.d("VowelEnvelopeData", "${voiceA.toList()}")
