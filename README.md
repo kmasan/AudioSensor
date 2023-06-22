@@ -1,5 +1,5 @@
 # AudioSensor
-https://jitpack.io/#kmasan/AudioSensor
+https://jitpack.io/#kmasan/AudioSensor  
 このライブラリはマイク等のaudioからbufferデータを取得するクラスとそのbufferをdb変換やfftなどの解析をするクラスが含まれます  
 This library includes classes for acquiring buffer data from audio sources such as microphones, and classes for analyzing the buffer data, such as db conversion and fft.
 
