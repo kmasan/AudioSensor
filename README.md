@@ -117,19 +117,22 @@ db変換する関数
 
 Function to convert db
 
-### `toMaxAmplitude(buffer: ShortArray): Double`
+### `toMaxAmplitude(buffer: ShortArray or DoubleArray): Double`
 最大振幅を返す関数
 `buffer: DoubleArray`版もある  
 
 Function to return the maximum amplitude.  
 `buffer: DoubleArray` version also available.
 
-### `fft(buffer: ShortArray): DoubleArray`
-fftする関数  
+### `fft(buffer: ShortArray or DoubleArray): DoubleArray`
+FFTする関数  
 
-Functions for fft.
+Functions for FFT.
 
-### `toMaxFrequency(buffer: DoubleArray, sampleRate: Int): Int`
+### `ifft(fftBuffer: DoubleArray): DoubleArray`
+逆FFTする関数
+
+### `toMaxFrequency(buffer: ShortArray or DoubleArray, sampleRate: Int): Int`
 fft結果から最大振幅の周波数を返す関数  
 sampleRateはAudioSensorから取得するとよい  
 buffer: ShortArray版もある  
@@ -138,7 +141,7 @@ Function to return the frequency of maximum amplitude from the fft result.
 SampleRate obtained from AudioSensor.  
 `buffer: ShortArray` version also available.
 
-### `searchFrequency(buffer: DoubleArray, targetFrequency: Int, sampleRate: Int): Double`
+### `searchFrequency(buffer: ShortArray or DoubleArray, targetFrequency: Int, sampleRate: Int): Double`
 fft結果から特定の周波数の振幅を返す関数  
 sampleRateはAudioSensorから取得するとよい  
 buffer: ShortArray版もある  
@@ -146,3 +149,15 @@ buffer: ShortArray版もある
 Function to return the amplitude of a specific frequency from the fft result.  
 SampleRate obtained from AudioSensor.  
 `buffer: ShortArray` version also available.
+
+### `toLogSpectrum(fftBuffer: DoubleArray): DoubleArray`
+対数スペクトルに変換する関数
+
+### `toPowerSpectrum(fftBuffer: DoubleArray): DoubleArray`
+パワースペクトルに変換する関数
+
+### `toSpectrumEnvelope(fftBuffer: DoubleArray, quefrencyTh: Double, sampleRate: Int): DoubleArray`
+fftした結果からスペクトル包絡を求める関数
+`quefrencyTh`を閾値としたローパスフィルタを用いている
+パワースペクトル→対数スペクトル→ローパスフィルタ
+
